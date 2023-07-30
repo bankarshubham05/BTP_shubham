@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/Common.xml">
+        <edmx:Include Alias="Common" Namespace="com.sap.vocabularies.Common.v1"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Core.V1.xml">
+        <edmx:Include Alias="Core" Namespace="Org.OData.Core.V1"/>
+    </edmx:Reference>
+    <edmx:DataServices>
+        <Schema Namespace="CatalogService" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+            <EntityContainer Name="EntityContainer">
+                <EntitySet Name="AddressSet" EntityType="CatalogService.AddressSet">
+                    <NavigationPropertyBinding Path="businesspartner" Target="BussinessPartnerSet"/>
+                </EntitySet>
+                <EntitySet Name="BussinessPartnerSet" EntityType="CatalogService.BussinessPartnerSet">
+                    <NavigationPropertyBinding Path="ADDRESS_GUID" Target="AddressSet"/>
+                </EntitySet>
+                <EntitySet Name="ProductSet" EntityType="CatalogService.ProductSet">
+                    <NavigationPropertyBinding Path="SUPPLIER_GUID" Target="BussinessPartnerSet"/>
+                    <NavigationPropertyBinding Path="texts" Target="ProductSet_texts"/>
+                    <NavigationPropertyBinding Path="localized" Target="ProductSet_texts"/>
+                </EntitySet>
+                <EntitySet Name="POs" EntityType="CatalogService.POs">
+                    <NavigationPropertyBinding Path="PARTNER_GUID" Target="BussinessPartnerSet"/>
+                    <NavigationPropertyBinding Path="Items" Target="POItems"/>
+                </EntitySet>
+                <EntitySet Name="POItems" EntityType="CatalogService.POItems">
+                    <NavigationPropertyBinding Path="PARENT_KEY" Target="POs"/>
+                    <NavigationPropertyBinding Path="PRODUCT_GUID" Target="ProductSet"/>
+                </EntitySet>
+                <EntitySet Name="ProductSet_texts" EntityType="CatalogService.ProductSet_texts"/>
+            </EntityContainer>
+            <EntityType Name="AddressSet">
+                <Key>
+                    <PropertyRef Name="NODE_KEY"/>
+                </Key>
+                <Property Name="NODE_KEY" Type="Edm.String" MaxLength="64" Nullable="false"/>
+                <Property Name="CITY" Type="Edm.String" MaxLength="64"/>
+                <Property Name="POSTAL_CODE" Type="Edm.String" MaxLength="64"/>
+                <Property Name="STREET" Type="Edm.String" MaxLength="64"/>
+                <Property Name="BUILDING" Type="Edm.String" MaxLength="64"/>
+                <Property Name="COUNTRY" Type="Edm.String" MaxLength="64"/>
+                <Property Name="ADDRESS_TYPE" Type="Edm.String" MaxLength="64"/>
+                <Property Name="VAL_START_DATE" Type="Edm.Date"/>
+                <Property Name="VAL_END_DATE" Type="Edm.Date"/>
+                <Property Name="LATITUDE" Type="Edm.Decimal" Scale="variable"/>
+                <Property Name="LONGITUDE" Type="Edm.Decimal" Scale="variable"/>
+                <NavigationProperty Name="businesspartner" Type="CatalogService.BussinessPartnerSet" Partner="ADDRESS_GUID">
+                    <ReferentialConstraint Property="ADDRESS_GUID_NODE_KEY" ReferencedProperty="NODE_KEY"/>
+                </NavigationProperty>
+            </EntityType>
+            <EntityType Name="BussinessPartnerSet">
+                <Key>
+                    <PropertyRef Name="NODE_KEY"/>
+                </Key>
+                <Property Name="NODE_KEY" Type="Edm.String" MaxLength="64" Nullable="false"/>
+                <Property Name="BP_ROLE" Type="Edm.String" MaxLength="2"/>
+                <Property Name="EMAIL_ADDRESS" Type="Edm.String" MaxLength="64"/>
+                <Property Name="PHONE_NUMBER" Type="Edm.String" MaxLength="14"/>
+                <Property Name="FAX_NUMBER" Type="Edm.String" MaxLength="14"/>
+                <Property Name="WEB_ADDRESS" Type="Edm.String" MaxLength="64"/>
+                <NavigationProperty Name="ADDRESS_GUID" Type="CatalogService.AddressSet" Partner="businesspartner">
+                    <ReferentialConstraint Property="ADDRESS_GUID_NODE_KEY" ReferencedProperty="NODE_KEY"/>
+                </NavigationProperty>
+                <Property Name="ADDRESS_GUID_NODE_KEY" Type="Edm.String" MaxLength="64"/>
+                <Property Name="BP_ID" Type="Edm.String" MaxLength="16"/>
+                <Property Name="COMPANY_NAME" Type="Edm.String" MaxLength="84"/>
+            </EntityType>
+            <EntityType Name="ProductSet">
+                <Key>
+                    <PropertyRef Name="NODE_KEY"/>
+                </Key>
+                <Property Name="NODE_KEY" Type="Edm.String" MaxLength="64" Nullable="false"/>
+                <Property Name="PRODUCT_ID" Type="Edm.String" MaxLength="28"/>
+                <Property Name="TYPE_CODE" Type="Edm.String" MaxLength="2"/>
+                <Property Name="CATEGORY" Type="Edm.String" MaxLength="32"/>
+                <Property Name="DESCRIPTION" Type="Edm.String" MaxLength="255"/>
+                <NavigationProperty Name="SUPPLIER_GUID" Type="CatalogService.BussinessPartnerSet">
+                    <ReferentialConstraint Property="SUPPLIER_GUID_NODE_KEY" ReferencedProperty="NODE_KEY"/>
+                </NavigationProperty>
+                <Property Name="SUPPLIER_GUID_NODE_KEY" Type="Edm.String" MaxLength="64"/>
+                <Property Name="TAX_TARIF_CODE" Type="Edm.Int32"/>
+                <Property Name="MEASURE_UNIT" Type="Edm.String" MaxLength="2"/>
+                <Property Name="WEIGHT_MEASURE" Type="Edm.Decimal" Scale="2" Precision="5"/>
+                <Property Name="WEIGHT_UNIT" Type="Edm.String" MaxLength="2"/>
+                <Property Name="CURRENCY_CODE" Type="Edm.String" MaxLength="4"/>
+                <Property Name="PRICE" Type="Edm.Decimal" Scale="2" Precision="15"/>
+                <Property Name="WIDTH" Type="Edm.Decimal" Scale="2" Precision="5"/>
+                <Property Name="DEPTH" Type="Edm.Decimal" Scale="2" Precision="5"/>
+                <Property Name="HEIGHT" Type="Edm.Decimal" Scale="2" Precision="5"/>
+                <Property Name="DIM_UNIT" Type="Edm.String" MaxLength="2"/>
+                <NavigationProperty Name="texts" Type="Collection(CatalogService.ProductSet_texts)">
+                    <OnDelete Action="Cascade"/>
+                </NavigationProperty>
+                <NavigationProperty Name="localized" Type="CatalogService.ProductSet_texts">
+                    <ReferentialConstraint Property="NODE_KEY" ReferencedProperty="NODE_KEY"/>
+                </NavigationProperty>
+            </EntityType>
+            <EntityType Name="POs">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="CURRENCY_CODE" Type="Edm.String" MaxLength="4"/>
+                <Property Name="GROSS_AMOUNT" Type="Edm.Decimal" Scale="2" Precision="15"/>
+                <Property Name="NET_AMOUNT" Type="Edm.Decimal" Scale="2" Precision="15"/>
+                <Property Name="TAX_AMOUNT" Type="Edm.Decimal" Scale="2" Precision="15"/>
+                <Property Name="ID" Type="Edm.String" MaxLength="64" Nullable="false"/>
+                <Property Name="PO_ID" Type="Edm.String" MaxLength="24"/>
+                <NavigationProperty Name="PARTNER_GUID" Type="CatalogService.BussinessPartnerSet">
+                    <ReferentialConstraint Property="PARTNER_GUID_NODE_KEY" ReferencedProperty="NODE_KEY"/>
+                </NavigationProperty>
+                <Property Name="PARTNER_GUID_NODE_KEY" Type="Edm.String" MaxLength="64"/>
+                <Property Name="LIFECYCLE_STATUS" Type="Edm.String" MaxLength="1"/>
+                <Property Name="OVERALL_STATUS" Type="Edm.String" MaxLength="2"/>
+                <NavigationProperty Name="Items" Type="Collection(CatalogService.POItems)" Partner="PARENT_KEY"/>
+            </EntityType>
+            <EntityType Name="POItems">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="CURRENCY_CODE" Type="Edm.String" MaxLength="4"/>
+                <Property Name="GROSS_AMOUNT" Type="Edm.Decimal" Scale="2" Precision="15"/>
+                <Property Name="NET_AMOUNT" Type="Edm.Decimal" Scale="2" Precision="15"/>
+                <Property Name="TAX_AMOUNT" Type="Edm.Decimal" Scale="2" Precision="15"/>
+                <Property Name="ID" Type="Edm.String" MaxLength="64" Nullable="false"/>
+                <NavigationProperty Name="PARENT_KEY" Type="CatalogService.POs" Partner="Items">
+                    <ReferentialConstraint Property="PARENT_KEY_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="PARENT_KEY_ID" Type="Edm.String" MaxLength="64"/>
+                <Property Name="PO_ITEM_POS" Type="Edm.Int32"/>
+                <NavigationProperty Name="PRODUCT_GUID" Type="CatalogService.ProductSet">
+                    <ReferentialConstraint Property="PRODUCT_GUID_NODE_KEY" ReferencedProperty="NODE_KEY"/>
+                </NavigationProperty>
+                <Property Name="PRODUCT_GUID_NODE_KEY" Type="Edm.String" MaxLength="64"/>
+            </EntityType>
+            <EntityType Name="ProductSet_texts">
+                <Key>
+                    <PropertyRef Name="locale"/>
+                    <PropertyRef Name="NODE_KEY"/>
+                </Key>
+                <Property Name="locale" Type="Edm.String" MaxLength="14" Nullable="false"/>
+                <Property Name="NODE_KEY" Type="Edm.String" MaxLength="64" Nullable="false"/>
+                <Property Name="DESCRIPTION" Type="Edm.String" MaxLength="255"/>
+            </EntityType>
+            <Annotations Target="CatalogService.BussinessPartnerSet/NODE_KEY">
+                <Annotation Term="Common.Label" String="{i18n>bp_key}"/>
+                </Annotations>
+                <Annotations Target="CatalogService.BussinessPartnerSet/BP_ROLE">
+                    <Annotation Term="Common.Label" String="{i18n>bp_role}"/>
+                    </Annotations>
+                    <Annotations Target="CatalogService.BussinessPartnerSet/EMAIL_ADDRESS">
+                        <Annotation Term="Common.Label" String="{i18n>email_addr}"/>
+                        </Annotations>
+                        <Annotations Target="CatalogService.BussinessPartnerSet/BP_ID">
+                            <Annotation Term="Common.Label" String="{i18n>bp_Id}"/>
+                            </Annotations>
+                            <Annotations Target="CatalogService.BussinessPartnerSet/COMPANY_NAME">
+                                <Annotation Term="Common.Label" String="{i18n>company_name}"/>
+                                </Annotations>
+                                <Annotations Target="CatalogService.ProductSet_texts/locale">
+                                    <Annotation Term="Common.Label" String="{i18n>LanguageCode}"/>
+                                    </Annotations>
+                                </Schema>
+                            </edmx:DataServices>
+                        </edmx:Edmx>

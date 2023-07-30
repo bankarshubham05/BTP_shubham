@@ -1,0 +1,38 @@
+{
+  "name": "capm_anubhav",
+  "version": "1.0.0",
+  "description": "A simple CAP project.",
+  "repository": "<Add your repository here>",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@sap/cds": "^6.8.2",
+    "@sap/cds-odata-v2-adapter-proxy": "^1.9.21",
+    "express": "^4",
+    "sqlite": "^5.0.1"
+  },
+  "devDependencies": {
+    "sqlite3": "^5",
+    "cds-plugin-ui5": "^0.1.4"
+  },
+  "scripts": {
+    "start": "cds-serve",
+    "watch-purchasedorderapp": "cds watch --open com.shubham.purchasedorderapp/index.html?sap-ui-xx-viewCache=false --livereload false"
+  },
+  "cds": {
+    "requires": {
+      "db": {
+        "kind": "sqlite",
+        "credentials": {
+          "database": "shubham.db"
+        }
+      }
+    }
+  },
+  "workspaces": [
+    "app/*"
+  ],
+  "sapux": [
+    "app/purchasedorderapp"
+  ]
+}
